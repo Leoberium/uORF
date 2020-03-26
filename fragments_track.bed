@@ -1,5 +1,5 @@
 browser position chr22:20,067,755-20,099,400
-track name="uORF" description="mRNA fragments containing uORFs", visibility=2, color=255,0,0
+track name="uORF" description="mRNA fragments containing uORFs" visibility=2 color=255,0,0
 #chrom  chromStart  chromEnd    name    score   strand  thickStart  thickEnd    itemRgb blockCount  blockSizes  blockStarts
 chr1	10093331	10093752	ENST00000377153.1	0	+	10093336	10093420	0	1	421	0
 chr1	12040368	12049400	ENST00000235329.5	0	+	12040428	12040539	0	3	173,145,179	0,1658,8853
@@ -2043,7 +2043,7 @@ chrX	152988962	152989549	ENST00000458587.2	0	-	152989410	152989422	0	1	587	0
 chrX	153707066	153707596	ENST00000357360.4	0	-	153707298	153707514	0	1	530	0
 chrX	154774756	154842597	ENST00000334398.3	0	-	154842473	154842494	0	2	182,145	0,67696
 chrX	154774756	154842538	ENST00000369439.4	0	-	154842473	154842494	0	2	182,86	0,67696
-track name="non_uORF" description="mRNA fragments without uORFs", visibility=2, color=0,0,255
+track name="non_uORF" description="mRNA fragments without uORFs" visibility=2 color=0,0,255
 #chrom  chromStart  chromEnd    name    score   strand  thickStart  thickEnd    itemRgb blockCount  blockSizes  blockStarts
 chr1	10092889	10093752	ENST00000253251.8	0	+	10092889	10092889	0	1	863	0
 chr1	10093653	10093752	ENST00000343090.6	0	+	10093653	10093653	0	1	99	0
