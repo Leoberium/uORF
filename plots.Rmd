@@ -6,7 +6,7 @@ output:
 
 ```{r include=FALSE}
 library(ggplot2)
-target_counts_by_eps <- readr::read_tsv('~/BioData/tpm_by_eps.bed')
+target_counts_by_eps <- readr::read_tsv('tpm_by_eps.tsv')
 ```
 
 Data:
@@ -23,7 +23,7 @@ length(unique(target_counts_by_eps$gene_id))
 
 ### Logarithmic plots
 
-SMG6 data by different $\varepsilon$:
+SMG6 data by different epsilon:
 
 ```{r fig.height=6, fig.width=9}
 ggplot(data = target_counts_by_eps, mapping = aes(
@@ -41,7 +41,7 @@ ggplot(data = target_counts_by_eps, mapping = aes(
   xlab('epsilon') + ylab('Logarithmic delta')
 ```
 
-Delta against average gene expression in KD (SMG6) and control by different $\varepsilon$:
+Delta against average gene expression in KD (SMG6) and control by different epsilon:
 
 ```{r fig.height=10, fig.width=10}
 ggplot(data = target_counts_by_eps, mapping = aes(
@@ -49,7 +49,7 @@ ggplot(data = target_counts_by_eps, mapping = aes(
   y = log10(frac_smg6) - log10(frac_control)
 )) + geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
-  xlab('Average expression in KD and control') + ylab('Logarithmic delta')
+  xlab('Average expression in KD and control (log)') + ylab('Logarithmic delta')
 ```
 
 How much genes have both uORF and non-uORF transcripts?
@@ -68,7 +68,7 @@ ggplot(data = target_counts_by_eps[keep, ],
          y = log10(frac_smg6) - log10(frac_control)
 )) + geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
-  xlab('Average expression in KD and control') + ylab('Logarithmic delta')
+  xlab('Average expression in KD and control (log)') + ylab('Logarithmic delta')
 ```
 
 How much genes have non-zero delta?
@@ -89,12 +89,12 @@ ggplot(data = na.omit(target_counts_by_eps[keep & keep2, ]),
          y = log10(frac_smg6) - log10(frac_control)
 )) + geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ factor(eps), scales = 'free') + 
-  xlab('Expression change from control to KD') + ylab('Logarithmic delta')
+  xlab('Expression change from control to KD (log)') + ylab('Logarithmic delta')
 ```
 
 ### Non-logarithmic plots
 
-Boxplots for different $\varepsilon$:
+Boxplots for different epsilon:
 
 ```{r fig.height=6, fig.width=9}
 ggplot(data = target_counts_by_eps, mapping = aes(
@@ -135,7 +135,7 @@ ggplot(data = na.omit(target_counts_by_eps[keep & keep2, ]),
          y = frac_smg6 - frac_control
 )) + geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ factor(eps), scales = 'free') + 
-  xlab('Expression change from control to KD') + ylab('Logarithmic delta')
+  xlab('Expression change from control to KD') + ylab('Delta')
 ```
-
-It's better to avoid small values of $\varepsilon$.
+  
+It's better to avoid small values of epsilon.

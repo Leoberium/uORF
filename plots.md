@@ -26,7 +26,7 @@ length(unique(target_counts_by_eps$gene_id))
 
 ### Logarithmic plots
 
-SMG6 data by different \(\varepsilon\):
+SMG6 data by different epsilon:
 
 ``` r
 ggplot(data = target_counts_by_eps, mapping = aes(
@@ -53,7 +53,7 @@ ggplot(data = target_counts_by_eps, mapping = aes(
 ![](plots_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 Delta against average gene expression in KD (SMG6) and control by
-different \(\varepsilon\):
+different epsilon:
 
 ``` r
 ggplot(data = target_counts_by_eps, mapping = aes(
@@ -61,7 +61,7 @@ ggplot(data = target_counts_by_eps, mapping = aes(
   y = log10(frac_smg6) - log10(frac_control)
 )) + geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
-  xlab('Average expression in KD and control') + ylab('Logarithmic delta')
+  xlab('Average expression in KD and control (log)') + ylab('Logarithmic delta')
 ```
 
     ## Warning: Removed 52 rows containing missing values (geom_point).
@@ -87,7 +87,7 @@ ggplot(data = target_counts_by_eps[keep, ],
          y = log10(frac_smg6) - log10(frac_control)
 )) + geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
-  xlab('Average expression in KD and control') + ylab('Logarithmic delta')
+  xlab('Average expression in KD and control (log)') + ylab('Logarithmic delta')
 ```
 
     ## Warning: Removed 41 rows containing missing values (geom_point).
@@ -121,14 +121,14 @@ ggplot(data = na.omit(target_counts_by_eps[keep & keep2, ]),
          y = log10(frac_smg6) - log10(frac_control)
 )) + geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ factor(eps), scales = 'free') + 
-  xlab('Expression change from control to KD') + ylab('Logarithmic delta')
+  xlab('Expression change from control to KD (log)') + ylab('Logarithmic delta')
 ```
 
 ![](plots_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ### Non-logarithmic plots
 
-Boxplots for different \(\varepsilon\):
+Boxplots for different epsilon:
 
 ``` r
 ggplot(data = target_counts_by_eps, mapping = aes(
@@ -179,9 +179,9 @@ ggplot(data = na.omit(target_counts_by_eps[keep & keep2, ]),
          y = frac_smg6 - frac_control
 )) + geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ factor(eps), scales = 'free') + 
-  xlab('Expression change from control to KD') + ylab('Logarithmic delta')
+  xlab('Expression change from control to KD') + ylab('Delta')
 ```
 
 ![](plots_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
-It’s better to avoid small values of \(\varepsilon\).
+It’s better to avoid small values of epsilon.
