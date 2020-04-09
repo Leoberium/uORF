@@ -1,6 +1,6 @@
 hub UCSCHub
 shortLabel uORF regulation
 longLabel Genome Hub for human uORF and NMD data
-genomeFile genomes.txt
+genomesFile genomes.txt
 email leo.mazaev@gmail.com
 
