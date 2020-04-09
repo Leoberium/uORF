@@ -1,6 +1,0 @@
-hub UCSCHub
-shortLabel uORF tracks
-longLabel transcript fragments and eCLIP peaks
-genomeFile genomes.txt
-email leo.mazaev@gmail.com
-
