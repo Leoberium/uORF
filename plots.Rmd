@@ -1,0 +1,141 @@
+---
+title: "Plots"
+output:
+  github_document
+---
+
+```{r include=FALSE}
+library(ggplot2)
+target_counts_by_eps <- readr::read_tsv('~/BioData/tpm_by_eps.bed')
+```
+
+Data:
+
+```{r}
+knitr::kable(head(target_counts_by_eps))
+```
+
+Number of genes:
+
+```{r}
+length(unique(target_counts_by_eps$gene_id))
+```
+
+### Logarithmic plots
+
+SMG6 data by different $\varepsilon$:
+
+```{r fig.height=6, fig.width=9}
+ggplot(data = target_counts_by_eps, mapping = aes(
+  x = as.factor(eps), y = log10(frac_smg6) - log10(frac_control)
+)) + geom_boxplot() + ggtitle('SMG6') + 
+  xlab('epsilon') + ylab('Logarithmic delta')
+```
+
+The same for UPF1 KD:
+
+```{r fig.height=6, fig.width=9}
+ggplot(data = target_counts_by_eps, mapping = aes(
+  x = as.factor(eps), y = log10(frac_upf1) - log10(frac_control)
+)) + geom_boxplot() + ggtitle('UPF1') + 
+  xlab('epsilon') + ylab('Logarithmic delta')
+```
+
+Delta against average gene expression in KD (SMG6) and control by different $\varepsilon$:
+
+```{r fig.height=10, fig.width=10}
+ggplot(data = target_counts_by_eps, mapping = aes(
+  x = log10(gene_tpm_smg6 + gene_tpm_control),
+  y = log10(frac_smg6) - log10(frac_control)
+)) + geom_point(size = 0.25) + ggtitle('SMG6') +
+  facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
+  xlab('Average expression in KD and control') + ylab('Logarithmic delta')
+```
+
+How much genes have both uORF and non-uORF transcripts?
+
+```{r}
+keep <- target_counts_by_eps$uorftx_number != target_counts_by_eps$alltx_number
+length(unique(target_counts_by_eps[keep, ]$gene_id))
+```
+
+The same plots only for genes having non-uorf transcripts too:
+
+```{r fig.height=10, fig.width=10}
+ggplot(data = target_counts_by_eps[keep, ], 
+       mapping = aes(
+         x = log10(gene_tpm_smg6 + gene_tpm_control),
+         y = log10(frac_smg6) - log10(frac_control)
+)) + geom_point(size = 0.25) + ggtitle('SMG6') +
+  facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
+  xlab('Average expression in KD and control') + ylab('Logarithmic delta')
+```
+
+How much genes have non-zero delta?
+
+```{r}
+keep2 <- log10(target_counts_by_eps$frac_smg6) != log10(target_counts_by_eps$frac_control)
+print(length(unique(target_counts_by_eps[keep2, ]$gene_id)))
+print(length(unique(target_counts_by_eps[keep & keep2, ]$gene_id)))
+```
+
+So, this second condition filters out a bit more genes.
+Now, the last plot (with filtering conditions) for logarithmic values: delta against gene expression change
+
+```{r fig.height=10, fig.width=10}
+ggplot(data = na.omit(target_counts_by_eps[keep & keep2, ]), 
+       mapping = aes(
+         x = log10(gene_tpm_smg6 / gene_tpm_control),
+         y = log10(frac_smg6) - log10(frac_control)
+)) + geom_point(size = 0.25) + ggtitle('SMG6') +
+  facet_wrap(~ factor(eps), scales = 'free') + 
+  xlab('Expression change from control to KD') + ylab('Logarithmic delta')
+```
+
+### Non-logarithmic plots
+
+Boxplots for different $\varepsilon$:
+
+```{r fig.height=6, fig.width=9}
+ggplot(data = target_counts_by_eps, mapping = aes(
+  x = as.factor(eps), y = frac_smg6 - frac_control
+)) + geom_boxplot() + ggtitle('SMG6') + 
+  xlab('epsilon') + ylab('Delta')
+```
+
+Delta against log of average expression in KD and control:
+
+```{r fig.height=10, fig.width=10}
+ggplot(data = target_counts_by_eps, mapping = aes(
+  x = log10(gene_tpm_smg6 + gene_tpm_control),
+  y = frac_smg6 - frac_control
+)) + geom_point(size = 0.25) + ggtitle('SMG6') +
+  facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
+  xlab('Average expression in KD and control (log)') + ylab('Delta')
+```
+
+The same with filtering conditions:
+
+```{r fig.height=10, fig.width=10}
+ggplot(data = na.omit(target_counts_by_eps[keep & keep2, ]),
+       mapping = aes(
+         x = log10(gene_tpm_smg6 + gene_tpm_control),
+         y = frac_smg6 - frac_control
+)) + geom_point(size = 0.25) + ggtitle('SMG6') +
+  facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
+  xlab('Average expression in KD and control (log)') + ylab('Delta')
+```
+
+Delta against gene expression change:
+
+```{r fig.height=10, fig.width=10}
+ggplot(data = na.omit(target_counts_by_eps[keep & keep2, ]), 
+       mapping = aes(
+         x = gene_tpm_smg6 / gene_tpm_control,
+         y = frac_smg6 - frac_control
+)) + geom_point(size = 0.25) + ggtitle('SMG6') +
+  facet_wrap(~ factor(eps), scales = 'free') + 
+  xlab('Expression change from control to KD') + ylab('Logarithmic delta')
+```
+
+It's better to avoid small values of $\varepsilon$.
