@@ -2,53 +2,53 @@ track uORF_UPF1_KD
 bigDataUrl uORF_deltaUPF1.bb
 shortLabel Fragments
 longLabel 5'UTR transcript fragments with uORFs, UPF1 knockdown
-visibility=3
-color=255,0,0
+visibility 3
+color 255,0,0
 type bigBed 12
 
 track uORF_SMG6_KD
 bigDataUrl uORF_deltaSMG6.bb
 shortLabel Fragments
 longLabel 5'UTR transcript fragments with uORFs, SMG6 knockdown
-visibility=3
-color=255,0,0
+visibility 3
+color 255,0,0
 type bigBed 12
 
 track uORF_shRNA_KD
 bigDataUrl uORF_deltaGene.bb
 shortLabel Fragments
 longLabel 5'UTR transcript fragments with uORFs, shRNA knockdown
-visibility=3
-color=255,0,0
+visibility 3
+color 255,0,0
 type bigBed 12
 
 track UPF1_KD
 bigDataUrl non_uORF_deltaUPF1.bb
 shortLabel Fragments
 longLabel 5'UTR transcript fragments without uORF, UPF1 knockdown
-visibility=3
-color=0,0,255
+visibility 3
+color 0,0,255
 type bigBed 12
 
 track SMG6_KD
 bigDataUrl non_uORF_deltaSMG6.bb
 shortLabel Fragments
 longLabel 5'UTR transcript fragments without uORF, SMG6 knockdown
-visibility=3
-color=0,0,255
+visibility 3
+color 0,0,255
 type bigBed 12
 
 track shRNA_KD
 bigDataUrl non_uORF_deltaGene.bb
 shortLabel Fragments
 longLabel 5'UTR transcript fragments without uORF, shRNA knockdown
-visibility=3
-color=0,0,255
+visibility 3
+color 0,0,255
 type bigBed 12
 
 track RBP
 bigDataUrl RBP_peaks.bb
 shortLabel Peaks
 longLabel eCLIP peaks associated with RBP
-visibility=3
+visibility 3
 type bigBed 6
