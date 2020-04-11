@@ -1,187 +1,155 @@
 Plots
 ================
 
-Data:
+Data
+itself:
 
 ``` r
-knitr::kable(head(target_counts_by_eps))
+kable(head(target_counts_by_eps))
 ```
 
-| gene\_id           | gene\_tpm\_control | gene\_tpm\_smg6 | gene\_tpm\_upf1 | uorftx\_tpm\_control | uorftx\_tpm\_smg6 | uorftx\_tpm\_upf1 | uorftx\_number | alltx\_number | frac\_control | frac\_smg6 | frac\_upf1 | eps |
-| :----------------- | -----------------: | --------------: | --------------: | -------------------: | ----------------: | ----------------: | -------------: | ------------: | ------------: | ---------: | ---------: | --: |
-| ENSG00000130939.14 |           4.803850 |        6.320538 |        6.534992 |             4.803850 |          6.320538 |          6.534992 |              3 |             4 |     1.0000000 |          1 |  1.0000000 |   0 |
-| ENSG00000142655.8  |          40.879122 |       35.921655 |       32.434899 |            37.111135 |         35.921655 |         28.905457 |              1 |             2 |     0.9078261 |          1 |  0.8911838 |   0 |
-| ENSG00000116688.12 |          24.696599 |       21.861144 |       29.798380 |            24.696599 |         21.861144 |         29.798380 |              2 |             2 |     1.0000000 |          1 |  1.0000000 |   0 |
-| ENSG00000116691.6  |           1.627398 |        2.532337 |        8.175462 |             1.627398 |          2.532337 |          2.403440 |              1 |             2 |     1.0000000 |          1 |  0.2939822 |   0 |
-| ENSG00000162458.8  |           0.564319 |        1.249094 |        0.838407 |             0.564319 |          1.249094 |          0.838407 |              4 |             5 |     1.0000000 |          1 |  1.0000000 |   0 |
-| ENSG00000065526.6  |           5.375528 |        4.599448 |        6.179964 |             5.375528 |          4.599448 |          6.179964 |              1 |             1 |     1.0000000 |          1 |  1.0000000 |   0 |
+| gene\_id           | gene\_name | cancer\_gene | self\_rbp | shRNA\_KD | uorftx\_number | alltx\_number | eps | uorftx\_tpm\_control | uorftx\_tpm\_smg6 | uorftx\_tpm\_upf1 | gene\_tpm\_control | gene\_tpm\_smg6 | gene\_tpm\_upf1 | frac\_control | frac\_smg6 | frac\_upf1 |
+| :----------------- | :--------- | :----------- | :-------- | :-------- | -------------: | ------------: | --: | -------------------: | ----------------: | ----------------: | -----------------: | --------------: | --------------: | ------------: | ---------: | ---------: |
+| ENSG00000130939.14 | UBE4B      | FALSE        | FALSE     | FALSE     |              1 |             1 |   0 |             4.803850 |          6.320538 |          6.534992 |           4.803850 |        6.320538 |        6.534992 |     1.0000000 |          1 |  1.0000000 |
+| ENSG00000142655.8  | PEX14      | FALSE        | FALSE     | FALSE     |              1 |             2 |   0 |            37.111135 |         35.921655 |         28.905457 |          40.879122 |       35.921655 |       32.434899 |     0.9078261 |          1 |  0.8911838 |
+| ENSG00000116688.12 | MFN2       | FALSE        | FALSE     | FALSE     |              2 |             2 |   0 |            24.696599 |         21.861144 |         29.798380 |          24.696599 |       21.861144 |       29.798380 |     1.0000000 |          1 |  1.0000000 |
+| ENSG00000116691.6  | MIIP       | FALSE        | FALSE     | FALSE     |              1 |             2 |   0 |             1.627398 |          2.532337 |          2.403440 |           1.627398 |        2.532337 |        8.175462 |     1.0000000 |          1 |  0.2939822 |
+| ENSG00000162458.8  | FBLIM1     | FALSE        | FALSE     | FALSE     |              3 |             3 |   0 |             0.564319 |          1.249094 |          0.838407 |           0.564319 |        1.249094 |        0.838407 |     1.0000000 |          1 |  1.0000000 |
+| ENSG00000065526.6  | SPEN       | TRUE         | FALSE     | FALSE     |              1 |             1 |   0 |             5.375528 |          4.599448 |          6.179964 |           5.375528 |        4.599448 |        6.179964 |     1.0000000 |          1 |  1.0000000 |
 
 Number of genes:
 
 ``` r
-length(unique(target_counts_by_eps$gene_id))
+(number_of_all_genes <- length(unique(target_counts_by_eps$gene_id)))
 ```
 
-    ## [1] 1771
+    ## [1] 1765
 
-### Logarithmic plots
-
-SMG6 data by different epsilon:
+Distribution of delta in case of UPF1 knockdown with eps = 0:
 
 ``` r
-ggplot(data = target_counts_by_eps, mapping = aes(
-  x = as.factor(eps), y = log10(frac_smg6) - log10(frac_control)
-)) + geom_boxplot() + ggtitle('SMG6') + 
-  xlab('epsilon') + ylab('Logarithmic delta')
+qplot(
+  x = delta_upf1,
+  data = target_counts_by_eps %>%
+    filter(eps == 0) %>%
+    transmute(delta_upf1 = frac_upf1 - frac_control),
+  bins = 20,
+  xlab = 'Delta for UPF1 KD',
+  ylab = 'Number of genes'
+)
 ```
 
-    ## Warning: Removed 75 rows containing non-finite values (stat_boxplot).
+    ## Warning: Removed 10 rows containing non-finite values (stat_bin).
 
 ![](plots_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-The same for UPF1 KD:
+A lot of genes have delta = 0.  
+Let’s define some subsetting
+rules:
 
 ``` r
-ggplot(data = target_counts_by_eps, mapping = aes(
-  x = as.factor(eps), y = log10(frac_upf1) - log10(frac_control)
-)) + geom_boxplot() + ggtitle('UPF1') + 
-  xlab('epsilon') + ylab('Logarithmic delta')
+keep_expressed_genes <- target_counts_by_eps$uorftx_number != target_counts_by_eps$alltx_number
+keep_target_genes <- target_counts_by_eps$uorftx_number != target_counts_by_eps$alltx_number
+sprintf("Number of genes having both uORF and non-uORF transcripts = %d",
+        sum(keep_target_genes[1:number_of_all_genes]))
 ```
 
-    ## Warning: Removed 74 rows containing non-finite values (stat_boxplot).
+    ## [1] "Number of genes having both uORF and non-uORF transcripts = 776"
 
-![](plots_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+``` r
+keep_smg6_delta <- (target_counts_by_eps$gene_tpm_smg6 != 0) & (target_counts_by_eps$frac_smg6 != target_counts_by_eps$frac_control)
+sprintf("Number of genes with non-zero delta in SMG6 knockdown = %d",
+        sum(keep_smg6_delta[1:number_of_all_genes]))
+```
+
+    ## [1] "Number of genes with non-zero delta in SMG6 knockdown = 726"
+
+``` r
+keep_upf1_delta <- (target_counts_by_eps$gene_tpm_upf1 != 0) & (target_counts_by_eps$frac_upf1 != target_counts_by_eps$frac_control)
+sprintf("Number of genes with non-zero delta in UPF1 knockdown = %d",
+        sum(keep_upf1_delta[1:number_of_all_genes]))
+```
+
+    ## [1] "Number of genes with non-zero delta in UPF1 knockdown = 734"
+
+### Logarithmic plots
+
+SMG6 data by different epsilon (with removing zero delta genes):
+
+``` r
+ggplot(data = target_counts_by_eps[keep_smg6_delta, ], mapping = aes(
+  x = as.factor(eps), y = log10(frac_smg6) - log10(frac_control)
+)) + geom_boxplot() + ggtitle('SMG6') + 
+  xlab('epsilon') + ylab('logDelta')
+```
+
+    ## Warning: Removed 23 rows containing non-finite values (stat_boxplot).
+
+![](plots_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 Delta against average gene expression in KD (SMG6) and control by
 different epsilon:
 
 ``` r
-ggplot(data = target_counts_by_eps, mapping = aes(
+ggplot(data = target_counts_by_eps[keep_smg6_delta, ], mapping = aes(
   x = log10(gene_tpm_smg6 + gene_tpm_control),
   y = log10(frac_smg6) - log10(frac_control)
 )) + geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
-  xlab('Average expression in KD and control (log)') + ylab('Logarithmic delta')
+  xlab('log(Average gene expression in KD and control)') + ylab('logDelta')
 ```
 
-    ## Warning: Removed 52 rows containing missing values (geom_point).
+![](plots_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-![](plots_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
-
-How much genes have both uORF and non-uORF
-transcripts?
+Logarithmic delta against gene expression change for SMG6 KD:
 
 ``` r
-keep <- target_counts_by_eps$uorftx_number != target_counts_by_eps$alltx_number
-length(unique(target_counts_by_eps[keep, ]$gene_id))
-```
-
-    ## [1] 884
-
-The same plots only for genes having non-uorf transcripts too:
-
-``` r
-ggplot(data = target_counts_by_eps[keep, ], 
-       mapping = aes(
-         x = log10(gene_tpm_smg6 + gene_tpm_control),
-         y = log10(frac_smg6) - log10(frac_control)
-)) + geom_point(size = 0.25) + ggtitle('SMG6') +
-  facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
-  xlab('Average expression in KD and control (log)') + ylab('Logarithmic delta')
-```
-
-    ## Warning: Removed 41 rows containing missing values (geom_point).
-
-![](plots_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
-
-How much genes have non-zero
-delta?
-
-``` r
-keep2 <- log10(target_counts_by_eps$frac_smg6) != log10(target_counts_by_eps$frac_control)
-print(length(unique(target_counts_by_eps[keep2, ]$gene_id)))
-```
-
-    ## [1] 879
-
-``` r
-print(length(unique(target_counts_by_eps[keep & keep2, ]$gene_id)))
-```
-
-    ## [1] 879
-
-So, this second condition filters out a bit more genes. Now, the last
-plot (with filtering conditions) for logarithmic values: delta against
-gene expression change
-
-``` r
-ggplot(data = na.omit(target_counts_by_eps[keep & keep2, ]), 
+ggplot(data = target_counts_by_eps[keep_smg6_delta, ], 
        mapping = aes(
          x = log10(gene_tpm_smg6 / gene_tpm_control),
          y = log10(frac_smg6) - log10(frac_control)
 )) + geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ factor(eps), scales = 'free') + 
-  xlab('Expression change from control to KD (log)') + ylab('Logarithmic delta')
+  xlab('logFC(gene expression) ') + ylab('logDelta')
 ```
 
-![](plots_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](plots_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ### Non-logarithmic plots
 
 Boxplots for different epsilon:
 
 ``` r
-ggplot(data = target_counts_by_eps, mapping = aes(
-  x = as.factor(eps), y = frac_smg6 - frac_control
-)) + geom_boxplot() + ggtitle('SMG6') + 
+ggplot(data = target_counts_by_eps[keep_smg6_delta, ],
+       mapping = aes(x = as.factor(eps), y = frac_smg6 - frac_control)) +
+  geom_boxplot() + ggtitle('SMG6') + 
   xlab('epsilon') + ylab('Delta')
 ```
 
-    ## Warning: Removed 21 rows containing non-finite values (stat_boxplot).
+![](plots_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
-![](plots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
-
-Delta against log of average expression in KD and control:
+Delta against log of average expression in KD (SMG6) and control:
 
 ``` r
-ggplot(data = target_counts_by_eps, mapping = aes(
-  x = log10(gene_tpm_smg6 + gene_tpm_control),
-  y = frac_smg6 - frac_control
-)) + geom_point(size = 0.25) + ggtitle('SMG6') +
+ggplot(data = target_counts_by_eps[keep_smg6_delta, ],
+       mapping = aes(x = log10(gene_tpm_smg6 + gene_tpm_control), y = frac_smg6 - frac_control)) +
+  geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
-  xlab('Average expression in KD and control (log)') + ylab('Delta')
+  xlab('log(Average expression in KD and control)') + ylab('Delta')
 ```
 
-    ## Warning: Removed 21 rows containing missing values (geom_point).
+![](plots_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
-![](plots_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
-
-The same with filtering conditions:
+Delta against gene expression change for SMG6 KD:
 
 ``` r
-ggplot(data = na.omit(target_counts_by_eps[keep & keep2, ]),
-       mapping = aes(
-         x = log10(gene_tpm_smg6 + gene_tpm_control),
-         y = frac_smg6 - frac_control
-)) + geom_point(size = 0.25) + ggtitle('SMG6') +
-  facet_wrap(~ as.factor(eps), scales = 'free', labeller = label_parsed) + 
-  xlab('Average expression in KD and control (log)') + ylab('Delta')
-```
-
-![](plots_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
-
-Delta against gene expression change:
-
-``` r
-ggplot(data = na.omit(target_counts_by_eps[keep & keep2, ]), 
-       mapping = aes(
-         x = gene_tpm_smg6 / gene_tpm_control,
-         y = frac_smg6 - frac_control
-)) + geom_point(size = 0.25) + ggtitle('SMG6') +
+ggplot(data = target_counts_by_eps[keep_smg6_delta, ], 
+       mapping = aes(x = gene_tpm_smg6 / gene_tpm_control, y = frac_smg6 - frac_control)) +
+  geom_point(size = 0.25) + ggtitle('SMG6') +
   facet_wrap(~ factor(eps), scales = 'free') + 
   xlab('Expression change from control to KD') + ylab('Delta')
 ```
 
-![](plots_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](plots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 It’s better to avoid small values of epsilon.
