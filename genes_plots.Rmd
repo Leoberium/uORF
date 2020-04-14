@@ -1,0 +1,114 @@
+---
+title: "Investigating genes"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(knitr)
+gd <- read_tsv('gene_table.tsv')
+```
+
+```{r}
+kable(head(gd))
+```
+
+Subsetting rules:
+
+```{r}
+keep_upf1 <- (gd$nmd_gene_upf1_tpm > 0) & (gd$delta_upf1 != 0)
+keep_smg6 <- (gd$nmd_gene_smg6_tpm > 0) & (gd$delta_smg6 != 0)
+```
+
+And let's define top genes for each knockdown:
+
+```{r}
+positive_smg6 <- gd %>%
+  filter(keep_smg6, delta_smg6 > 0) %>% 
+  select(gene_name, entrez_id, delta_smg6) %>% 
+  arrange(desc(delta_smg6))
+kable(head(positive_smg6))
+```
+
+```{r}
+positive_upf1 <- gd %>%
+  filter(keep_upf1, delta_upf1 > 0) %>% 
+  select(gene_name, entrez_id, delta_upf1) %>% 
+  arrange(desc(delta_upf1))
+kable(head(positive_upf1))
+```
+
+Now let's enrich their intersection:
+
+```{r}
+positive_genes <- intersect(positive_smg6$gene_name, positive_upf1$gene_name)
+write_lines(x = positive_genes, path = 'positive_genes.txt')
+```
+
+```{r}
+enr <- read_tsv('msigdb_results.tsv')
+colnames(enr) <- c('gene_set_name', 'genes_in_gene_set', 'description',
+                   'genes_in_overlap', 'k/K', 'p_value', 'q_value')
+kable(enr)
+```
+
+```{r}
+ggplot(data = enr,
+       mapping = aes(
+         x = genes_in_overlap,
+         y = gene_set_name,
+         fill = q_value
+       )) +
+  geom_col()
+```
+
+```{r}
+library(ggrepel)
+```
+
+```{r fig.height=6, fig.width=9}
+ggplot(
+  data = gd[keep_upf1 & gd$is_rbp, ],
+  mapping = aes(
+    x = log10(nmd_gene_upf1_tpm / nmd_gene_control_tpm),
+    y = delta_upf1,
+    color = self_rbp,
+    label = gene_name
+  )
+) + 
+  geom_point(size = 0.75) + ggtitle('UPF1') +
+  geom_label_repel(
+    data = gd[keep_upf1 & gd$is_rbp & gd$delta_upf1 > 0.1, ],
+    mapping = aes(
+      x = log10(nmd_gene_upf1_tpm / nmd_gene_control_tpm),
+      y = delta_upf1,
+      label = gene_name
+    ),
+    size = 3
+  ) +
+  geom_hline(yintercept = 0.1, size = 0.1)
+```
+
+```{r fig.height=6, fig.width=9}
+ggplot(
+  data = gd[keep_smg6 & gd$is_rbp, ],
+  mapping = aes(
+    x = log10(nmd_gene_smg6_tpm / nmd_gene_control_tpm),
+    y = delta_smg6,
+    color = self_rbp,
+    label = gene_name
+  )
+) + 
+  geom_point(size = 0.75) + ggtitle('SMG6') +
+  geom_label_repel(
+    data = gd[keep_smg6 & gd$is_rbp & gd$delta_smg6 > 0.1, ],
+    mapping = aes(
+      x = log10(nmd_gene_smg6_tpm / nmd_gene_control_tpm),
+      y = delta_smg6,
+      label = gene_name
+    ),
+    size = 3
+  ) +
+  geom_hline(yintercept = 0.1, size = 0.1)
+```
+
