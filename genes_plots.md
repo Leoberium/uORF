@@ -5,14 +5,14 @@ Investigating genes
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+    ## ── Attaching packages ──────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 
     ## ✓ ggplot2 3.3.0     ✓ purrr   0.3.3
     ## ✓ tibble  3.0.0     ✓ dplyr   0.8.5
     ## ✓ tidyr   1.0.2     ✓ stringr 1.4.0
     ## ✓ readr   1.3.1     ✓ forcats 0.5.0
 
-    ## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ─────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -179,7 +179,8 @@ ggplot(
     ),
     size = 3
   ) +
-  geom_hline(yintercept = 0.1, size = 0.1)
+  geom_hline(yintercept = 0.1, size = 0.1) +
+  xlab('logFC(gene)') + ylab('Delta')
 ```
 
 ![](genes_plots_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
@@ -204,7 +205,52 @@ ggplot(
     ),
     size = 3
   ) +
-  geom_hline(yintercept = 0.1, size = 0.1)
+  geom_hline(yintercept = 0.1, size = 0.1) +
+  xlab('logFC(gene)') + ylab('Delta')
 ```
 
 ![](genes_plots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
+ggplot(
+  data = gd[keep_upf1 & !is.na(gd$diff_score), ],
+  mapping = aes(
+    x = diff_score,
+    y = delta_upf1,
+  )
+) + geom_point(size = 0.75) + ggtitle('Delta (UPF1) vs Kozak') +
+  xlab('Kozak score difference') + ylab('Delta')
+```
+
+![](genes_plots_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+``` r
+ggplot(
+  data = gd[keep_upf1 & !is.na(gd$diff_score) & gd$diff_score > 0 & gd$is_rbp, ],
+  mapping = aes(
+    x = diff_score,
+    y = delta_upf1,
+    color = self_rbp,
+    label = gene_name
+  )
+) + geom_point(size = 0.75) + ggtitle('Delta (UPF1) vs Kozak (RBP genes only)') +
+  xlab('Kozak score difference') + ylab('Delta') +
+  geom_label_repel()
+```
+
+![](genes_plots_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+``` r
+ggplot(
+  data = gd[!is.na(gd$delta_KD) & gd$delta_KD != 0, ],
+  mapping = aes(
+    x = log10(kd_gene_knockdown_tpm / kd_gene_control_tpm),
+    y = delta_KD,
+    color = self_rbp,
+    label = gene_name
+  )
+) + geom_point() + ggtitle('shRNA KD') +
+  xlab('logFC(gene)') + ylab('Delta for KD') + geom_label_repel()
+```
+
+![](genes_plots_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
