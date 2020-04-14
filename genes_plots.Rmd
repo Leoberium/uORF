@@ -86,7 +86,8 @@ ggplot(
     ),
     size = 3
   ) +
-  geom_hline(yintercept = 0.1, size = 0.1)
+  geom_hline(yintercept = 0.1, size = 0.1) +
+  xlab('logFC(gene)') + ylab('Delta')
 ```
 
 ```{r fig.height=6, fig.width=9}
@@ -109,6 +110,46 @@ ggplot(
     ),
     size = 3
   ) +
-  geom_hline(yintercept = 0.1, size = 0.1)
+  geom_hline(yintercept = 0.1, size = 0.1) +
+  xlab('logFC(gene)') + ylab('Delta')
 ```
+
+```{r fig.height=6, fig.width=9}
+ggplot(
+  data = gd[keep_upf1 & !is.na(gd$diff_score), ],
+  mapping = aes(
+    x = diff_score,
+    y = delta_upf1,
+  )
+) + geom_point(size = 0.75) + ggtitle('Delta (UPF1) vs Kozak') +
+  xlab('Kozak score difference') + ylab('Delta')
+```
+
+```{r fig.height=6, fig.width=9}
+ggplot(
+  data = gd[keep_upf1 & !is.na(gd$diff_score) & gd$diff_score > 0 & gd$is_rbp, ],
+  mapping = aes(
+    x = diff_score,
+    y = delta_upf1,
+    color = self_rbp,
+    label = gene_name
+  )
+) + geom_point(size = 0.75) + ggtitle('Delta (UPF1) vs Kozak (RBP genes only)') +
+  xlab('Kozak score difference') + ylab('Delta') +
+  geom_label_repel()
+```
+
+```{r fig.height=6, fig.width=9}
+ggplot(
+  data = gd[!is.na(gd$delta_KD) & gd$delta_KD != 0, ],
+  mapping = aes(
+    x = log10(kd_gene_knockdown_tpm / kd_gene_control_tpm),
+    y = delta_KD,
+    color = self_rbp,
+    label = gene_name
+  )
+) + geom_point() + ggtitle('shRNA KD') +
+  xlab('logFC(gene)') + ylab('Delta for KD') + geom_label_repel()
+```
+
 
