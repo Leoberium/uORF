@@ -36,6 +36,20 @@ qplot(
 )
 ```
 
+```{r}
+x <- target_counts_by_eps %>% filter(eps == 0)
+x$delta_upf1 <- x$frac_upf1 - x$frac_control
+x <- filter(x, delta_upf1 != 0)
+wilcox.test(x$delta_upf1)
+```
+
+```{r}
+x <- filter(x, alltx_number == 2, uorftx_number == 1)
+summary(x$delta_upf1)
+nrow(x)
+wilcox.test(x$delta_upf1)
+```
+
 A lot of genes have delta = 0.  
 Let's define some subsetting rules:
 
