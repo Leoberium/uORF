@@ -2,7 +2,7 @@
 
 ### Further ideas:
 - Prepare new quantification of transcripts with StringTie or something similar
-- Prior filtering of genes of with 1 exon, genes with long introns, etc. Generally all groups of genes which may be confounding factors
+- Prior filtering of genes of with 1 exon, genes with long 3'UTRs, etc. Generally all groups of genes which may be confounding factors
 
 ### Folders:
 - `diagnostic_plots_files` and `genes_plots_files` are auxiliry folders with images for .Rmd files
